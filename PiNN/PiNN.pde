@@ -1,3 +1,10 @@
+/**
+*  Author: Cristian Pintea (http://pintea.net)
+*  Copyright 2017
+*  PiNN minimalistic implementation of ANN with Backprop
+*
+*/
+
 void setup(){
     NeuralNetwork nn = new NeuralNetwork(new int[]{3, 1}, 2);
     double[] output = nn.compute(new double[]{1, 1});
@@ -10,6 +17,8 @@ void setup(){
 void draw(){
   
 }
+
+
 
 class NeuralNetwork{
   Layer[] l;
@@ -31,20 +40,37 @@ class NeuralNetwork{
     return lastActivations;
   }
   
-  void backpropagate(double[] input, double[] expOutput){
+  void backpropagate(double[] input, double[] expOutput){   
     double[] output = compute(input);
     float firstCost = cost(output, expOutput);
+    
+    //Output layer
+    double[] newNeurons = new double[l[0].size];
+      for(int nn = 0; nn < l[ln].size; nn++){
+        for(int wn = 0; wn < l[ln].n[nn].w.length; wn++) {
+          
+        }
+      }
+    
+    for(int ln = l.length - 2; ln >= 0; ln--){
+      newNeurons = new double[l[0].size];
+      for(int nn = 0; nn < l[ln].size; nn++){
+        for(int wn = 0; wn < l[ln].n[nn].w.length; wn++) {
+          
+        }
+      }
+    }
+    
+
     double[] _output = output;
     _output[0] += 0.1;
-    double pdCostOutput = cost(_output, expOutput);
+    double pdCostOutput = cost(_output, expOutput) - firstCost;
     double[] in = l[1].n[0].input;
-    _output[0] = l[1].n[0].compute();
-    double pdCostWeight = l[1].n[0].
+    in[0] += 0.1;
+    _output[0] = l[1].n[0].compute(in);
+    double pdOutputWeight = output[0] - _output[0];
+    double pdCostWeight = pdOutputWeight * pdCostOutput;
     
-    l[0].n[0].weights[0] += 0.1;
-    output = compute(input);
-    float lastCost = cost(output, expOutput);
-    println(firstCost + " " + lastCost);
   }
   
   float cost(double[] output, double[] expOutput){
@@ -93,28 +119,30 @@ class Layer{
 
 class Neuron{
   int synapses;
-  double[] weights;
+  double[] w;
+  double[] pdCostWeight;
   double bias = 0;
   double[] input;
   double weightedInput;
   
   public Neuron(int synapses){
     this.synapses = synapses;
-    weights = new double[synapses];
-    for(int i = 0; i < weights.length; i++){
-      weights[i] = random(-1, 1);
+    w = new double[synapses];
+    for(int i = 0; i < w.length; i++){
+      w[i] = random(-1, 1);
     }
+    pdCostWeight = new double[w.length];
   }
   
   public Neuron(double[] weights, double bias){
     synapses = weights.length;
-    this.weights = weights;
+    this.w = weights;
     this.bias = bias;
   }
   
   public double compute(double[] input){
     this.input = input;
-    double[] weightedInputs = vectorMultiply(input, weights);
+    double[] weightedInputs = vectorMultiply(input, w);
     for(int i = 0; i < weightedInputs.length; i++){
       weightedInputs[i] += bias;
     }
